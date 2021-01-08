@@ -3,4 +3,5 @@ __pycache__/
 movies_40k/
 main_engine_101.ipynb/
 id_ed2559/
-id_ed2559.pub/
+*.pub/
+*/
