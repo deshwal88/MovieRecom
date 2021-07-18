@@ -918,8 +918,9 @@ font-family: ' sans-serif';
 
 .popover-body{
   background-color: #1f748f;
+  height: 350px;
   color: #ccc;
-  display: none;
+
 }
 
 .tooltip-inner {
@@ -1782,11 +1783,6 @@ display: block;
   height: 940px;
 }
 
-#success-alert{
-  position: absolute;
-  top: 85px;
-  left: -12px;
-}
 
 .stars{
   right: 38px;

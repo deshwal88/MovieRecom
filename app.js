@@ -1,3 +1,4 @@
+
 //----------------------< Importing required modules >--------------------------
 
 var {spawn} = require('child_process');
@@ -56,7 +57,7 @@ app.get("/movielist",function(req,res){
   else
     mov=recom
 
-  res.render("watchlist",{added_movies: watchlist.title , ratings: watchlist.ratings, recom:mov,curyear:curyear});
+  res.render("watchlist",{added_movies: watchlist.title , ratings: watchlist.ratings, recom:mov, curyear:curyear});
 })
 
 
@@ -133,11 +134,12 @@ async function run() {
       let ind = req.params.index;
       let poster = req.params.movieposter;
       let movies = eval(req.params.query);
-
       let profile = await get_profile(movies[ind].tmdbId);
+
+      let bio = await get_bio(profile.cast);
       console.log("Profile generated!");
       res.render("moviepost", {
-        movietitle: movies[ind].title, movieimage: poster, profile: profile, id: movies[ind]._id,
+        movietitle: movies[ind].title, movieimage: poster, profile: profile,bio:bio, id: movies[ind]._id,
         genre: movies[ind].genres, popularity: movies[ind].popularity, voteaverage: movies[ind].vote_average, releasedate: movies[ind].release_date,curyear:curyear})
     });
 
@@ -195,13 +197,12 @@ async function run() {
       soc.emit('recommend',watchlist,(data)=>{
         col1.find({'$or':data}).toArray(async (err,mov)=>{
           recom = mov;
-
           for (var i = 0; i < recom.length; i++) {
             let url = await get_poster(recom[i].tmdbId);
             recom[i]['poster'] = url;
           }
 
-          res.redirect("/movielist",{curyear:curyear});
+          res.redirect("/movielist");
         });
       });
     });
@@ -224,6 +225,26 @@ var api_key = "30d7de721f9ac1c958640499561b574a";
 var query = '/images?'
 var query1 = '/credits?'
 var img = "https://image.tmdb.org/t/p/w92"
+var c_url = "https://api.themoviedb.org/3/person/"
+
+
+// Generating cast biography
+async function get_bio(cast) {
+  let bio = Array(11).fill('No Biography found');
+
+  for(i=0;i<11;i++){
+    let id = cast[i][3]
+    let endpoint = c_url + id + "?api_key=" + api_key;
+    await fetch(endpoint)
+      .then(res => res.json()
+      .then(data => {
+        if(data.biography!='')
+          bio[i]=data.biography;
+      }))
+      .catch(err => console.log(err));
+  }
+  return bio
+}
 
 
 // Generating Profile for a movie
@@ -240,7 +261,7 @@ async function get_profile(movie_id) {
       for(i=0;i<11;i++){
         if (cast[i] == undefined)
           break;
-        credits.cast[i] = [cast[i].profile_path, cast[i].original_name, cast[i].character];
+        credits.cast[i] = [cast[i].profile_path,cast[i].original_name, cast[i].character,cast[i].id];
       }
 
       crew.forEach((item)=>{
@@ -286,11 +307,14 @@ child.stderr.on('data', (data) => console.log(data.toString()));
 
 
 //----------------------< Deploying app on port >-------------------------------
-
+let host="http://localhost:";
 let port = process.env.PORT;
-if(port==null || port==""){
+
+if(port==null || port=="")
   port=3000;
-}
+
+child.stdin.write(host+port);
+child.stdin.end();
 
 http.listen(port, function(req, res) {
   console.log("Server is running on port 3000");

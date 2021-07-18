@@ -1,11 +1,11 @@
 #Importing required modules
+import sys
 import socketio
 import pandas as pd
 import numpy as np
 import nltk
 import json
 import swifter
-
 
 #Loading data
 file_name=['./data/features.npz','./data/movies']
@@ -17,8 +17,9 @@ def distance(row,string):
     return nltk.edit_distance(row[2],string)
 
 #Creating client object
+address=sys.stdin.read()
 client=socketio.Client()
-client.connect('http://localhost:3000')
+client.connect(address)
 
 
 #Defining events

@@ -1,0 +1,3 @@
+"MovieRecom" is a web application which is capable of recommending movies according to users experience. The App comes with a featured and user-friendly interface which provides an ease of using the application. It contains around 45000 movies with information about cast, crew, movie posters etc. directly pulled from TMDb through API. It makes use of the watchlist produced specific to the user which will contain movies that the user has watched with ratings. The appliation finally analyzes data, performs calculations in python and returns results.
+
+Discover new movies through MovieRecom! Enjoy using!
